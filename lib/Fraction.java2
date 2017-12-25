@@ -1,0 +1,128 @@
+import java.io.Serializable;
+
+/**
+ * Fraction
+ * 
+ */
+
+public class Fraction implements Comparable<Fraction>, Serializable {
+
+    public static final long serialVersionUID = 1L;
+
+    private final long top;
+    private final long bottom;
+
+    public Fraction(long top, long bottom) {
+        long mult = gcd(top, bottom);
+        this.top = top / mult;
+        this.bottom = bottom / mult;
+    }
+
+    public Fraction(long num) {
+        this(num, 1);
+    }
+
+    private static long gcd(long a, long b) {
+        if (a == 0 || b == 0)
+            return a + b; // base case
+        return gcd(b, a % b);
+    }
+
+    public Fraction plus(long top, long bottom) {
+        if (this.bottom == bottom)
+            return new Fraction(this.top + top, this.bottom);
+        long newTop = (this.top * bottom) + (top * this.bottom);
+        long newBottom = this.bottom * bottom;
+        return new Fraction(newTop, newBottom);
+    }
+
+    public Fraction plus(long p) {
+        return this.plus(p, 1);
+    }
+
+    public Fraction plus(Fraction fr) {
+        return this.plus(fr.top, fr.bottom);
+    }
+
+    public Fraction minus(long top, long bottom) {
+        if (this.bottom == bottom)
+            return new Fraction(this.top - top, this.bottom);
+        long newTop = (this.top * bottom) - (top * this.bottom);
+        long newBottom = this.bottom * bottom;
+        return new Fraction(newTop, newBottom);
+    }
+
+    public Fraction minus(long num) {
+        return this.minus(num, 1);
+    }
+
+    public Fraction minus(Fraction fr) {
+        return this.minus(fr.top, fr.bottom);
+    }
+
+    public Fraction multiply(long top, long bottom) {
+        return new Fraction(this.top * top, this.bottom * bottom);
+    }
+
+    public Fraction multiply(long num) {
+        return this.multiply(num, 1);
+    }
+
+    public Fraction multiply(Fraction fr) {
+        return this.multiply(fr.top, fr.bottom);
+    }
+
+    public Fraction divide(long top, long bottom) {
+        return new Fraction(this.top * bottom, this.bottom * top);
+    }
+
+    public Fraction divide(long num) {
+        return this.divide(num, 1);
+    }
+
+    public Fraction divide(Fraction fr) {
+        return this.divide(fr.top, fr.bottom);
+    }
+
+    private static long toPow(long num, long pow) {
+        if (pow == 0)
+            return 1;
+        long ret = num;
+        for (int i = 1; i < pow; i++) {
+            ret *= num;
+            if (ret < num) {
+                System.out.println("OverFlow");
+                System.exit(1);
+            }
+        }
+        return ret;
+    }
+
+    public void pow(long exp) {
+        this.top = toPow(this.top, exp);
+        this.bottom = toPow(this.bottom, exp);
+    }
+
+    public String toString() {
+        return this.bottom == 1 ? "" + this.top : this.top + "/" + this.bottom;
+    }
+
+    public double toDecimal() {
+        simplify();
+        return ((double) this.top) / ((double) this.bottom);
+    }
+
+    public int compareTo(Fraction fr) {
+        if (this.bottom != fr.bottom) {
+            long t = this.bottom;
+            this.multTopBottom(fr.bottom);
+            fr.multTopBottom(t);
+        }
+        return (int) (fr.top - this.top);
+    }
+
+    public boolean equals(Fraction fr) {
+        return this.top == fr.top && this.bottom == fr.bottom;
+    }
+
+}
